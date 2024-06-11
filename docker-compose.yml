@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  fastapi:
+    container_name: foodlabel_webservice
+    build:
+      context: .
+    environment:
+      - WORKERS_PER_CORE=4
+      - MAX_WORKERS=24
+      - LOG_LEVEL=warning
+      - TIMEOUT=200
+    ports:
+      - "60333:60333"
+    command: uvicorn main:app --host 0.0.0.0 --port 60333
+    volumes:
+      - ./yolov5:/yolov5
+      - ./html:/app/html
+    deploy:
+      resources:
+        limits:
+          memory: 1024GB
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 2
+              capabilities: [gpu]
